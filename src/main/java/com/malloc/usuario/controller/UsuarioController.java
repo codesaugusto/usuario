@@ -1,7 +1,7 @@
 package com.malloc.usuario.controller;
 
 import com.malloc.usuario.business.UsuarioService;
-import com.malloc.usuario.business.dto.UsuarioDTO;
+import com.malloc.usuario.infrastructure.entity.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +17,7 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<UsuarioDTO> salvaUsuario(@RequestBody UsuarioDTO usuarioDTO){
-        return ResponseEntity.ok(usuarioService.salvaUsuario(usuarioDTO));
+    public ResponseEntity<Usuario> salvaUsuario(@RequestBody Usuario usuario){
+        return ResponseEntity.ok(usuarioService.salvaUsuario(usuario));
     }
 }

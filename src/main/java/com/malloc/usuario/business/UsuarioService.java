@@ -1,8 +1,7 @@
 package com.malloc.usuario.business;
 
-import com.malloc.usuario.business.converter.UsuarioConverter;
-import com.malloc.usuario.business.dto.UsuarioDTO;
 import com.malloc.usuario.infrastructure.entity.Usuario;
+import com.malloc.usuario.infrastructure.exceptions.ConflictException;
 import com.malloc.usuario.infrastructure.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,12 +11,28 @@ import org.springframework.stereotype.Service;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final UsuarioConverter usuarioConverter;
 
-    public UsuarioDTO salvaUsuario(UsuarioDTO usuarioDTO){
-
-        Usuario usuario = usuarioConverter.paraUsuario(usuarioDTO);
-        return usuarioConverter.paraUsuarioDTO(usuarioRepository.save(usuario));
+    public Usuario salvaUsuario(Usuario usuario){
+        try{
+            emailExiste(usuario.getEmail());
+            return usuarioRepository.save(usuario);
+        } catch (ConflictException e) {
+            throw new ConflictException("Email já cadastrado", e.getCause());
+        }
     }
 
+    public void emailExiste(String email){
+        try{
+           boolean existe = verificaEmailExitente(email);
+           if (existe){
+               throw new ConflictException("Email já cadastrado" + email);
+           }
+        }catch (ConflictException e){
+            throw new ConflictException("Email ja cadastrado", e.getCause());
+        }
+    }
+
+    public boolean verificaEmailExitente(String email){
+        return usuarioRepository.existsByEmail(email);
+    }
 }
